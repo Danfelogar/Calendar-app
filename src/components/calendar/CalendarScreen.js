@@ -9,36 +9,50 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Navbar } from '../ui/Navbar';
 import { CalendarEvent } from './CalendarEvent';
 import { CalendarModal } from './CalendarModal';
+import { uiOpenModal } from '../../actions/ui';
+import { eventSetActive } from '../../actions/events';
+import { useDispatch } from 'react-redux';
+import { AddNewFab } from '../ui/AddNewFab';
+import { useSelector } from 'react-redux';
 
 
 // moment.locale('es');para cambiar el nombre de las fechas a español
 const localizer = momentLocalizer(moment); //or globalizerlocalizer
 
-const events =[
-    {
-    title: 'Cumpleaños de mi amorcito',
-    start: moment().toDate(), //newDate
-    end: moment().add(2, 'hours').toDate(),
-    bgcolor: '#fafafa',
-    notes: 'debo de darle una sorpresa',
-    user:{
-        _id: '123',
-        name:'Daniel'
-    }
+// const events =[
+//     {
+//     title: 'Cumpleaños de mi amorcito',
+//     start: moment().toDate(), //newDate
+//     end: moment().add(2, 'hours').toDate(),
+//     bgcolor: '#fafafa',
+//     notes: 'debo de darle una sorpresa',
+//     user:{
+//         _id: '123',
+//         name:'Daniel'
+//     }
 
-},
-];
+// },
+// ];
 
 export const CalendarScreen = () => {
 
-    const [lastView, setLastView] = useState(localStorage.getItem('lastView') || 'month' )
+    const dispatch = useDispatch();
+
+    const  { events }  = useSelector(state => state.calendar);
+
+    const [lastView, setLastView] = useState(localStorage.getItem('lastView') || 'month' );
 
     const onDoubleClick = (e) => {
-        console.log(e)
+        // console.log(e)
+        console.log('abrir modal');
+        dispatch( uiOpenModal() );
     }
 
     const onSelectEvent = (e) => {
-        console.log(e)
+        // console.log(e);
+        // console.log('click');
+        dispatch( eventSetActive(e) );
+
     }
 
     const onViewChange = (e) => {
@@ -82,6 +96,8 @@ export const CalendarScreen = () => {
                     event: CalendarEvent
                 }}
                 />
+
+                <AddNewFab />
 
                 <CalendarModal />
         </div>

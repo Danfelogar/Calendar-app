@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import DateTimePicker from 'react-datetime-picker';
 import moment from 'moment';
 import Swal from 'sweetalert2';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { uiCloseModal } from '../../actions/ui';
+import { eventAddNew, eventClearActiveEvent, eventUpdated } from '../../actions/events';
 
 
 const customStyles = {
@@ -22,7 +26,19 @@ const now= moment().minutes(0).second(0).add(1,'hours');//11:33
 const nowPlus1 = now.clone().add(1, 'hours');
 
 
+const initEvent = {
+    title: '',
+    notes: '',
+    start: now.toDate(),
+    end: nowPlus1.toDate()
+}
+
 export const CalendarModal = () => {
+
+    const { modalOpen } = useSelector(state => state.ui);
+    const { activeEvent } = useSelector(state => state.calendar);
+
+    const dispatch = useDispatch();
 
     const [dateStart, setDateStart] = useState(  now.toDate()  );
 
@@ -30,14 +46,15 @@ export const CalendarModal = () => {
 
     const [titleValid, setTitleValid] = useState(true);
 
-    const [formValues, setFormValues] = useState({
-        title: 'Event',
-        notes: '',
-        start: now.toDate(),
-        end: nowPlus1.toDate()
-    });
+    const [formValues, setFormValues] = useState( initEvent );//ponemos initEvent por fuera como constant para que no se este dibujando constantemente
 
     const { notes, title, start, end } = formValues;
+
+    useEffect(() => {
+        if ( activeEvent ) {
+            setFormValues( activeEvent );
+        }
+    }, [activeEvent])
 
     const handleInputChange = ({ target }) =>{
 
@@ -77,15 +94,37 @@ export const CalendarModal = () => {
 
         }
 
+        if( activeEvent ) {
+            dispatch( eventUpdated(formValues) );
+            //si selecciono una carta  con activeEvent retorname de nuevo el formulario para cambiarlo
+        }else{
+            dispatch(eventAddNew({
+                ...formValues,
+                id: new Date().getTime(),
+                user: {
+                    _id:'123',
+                    name: 'polo'
+                }
+            })
+            );
+            // de lo contrario creame una accion nueva
+        }
+
+
         setTitleValid(true);
         closeModal();
     }
-    const closeModal = () =>{
 
+    const closeModal = () =>{
+        // console.log('cerrar modal');
+        dispatch( uiCloseModal() );
+        setFormValues( initEvent );
+        dispatch( eventClearActiveEvent() );
     }
+
     return (
         <Modal
-        isOpen={ true }
+        isOpen={ modalOpen }
         // onAfterOpen={ afterOpenModal }
         onRequestClose={ closeModal }
         style={ customStyles }
