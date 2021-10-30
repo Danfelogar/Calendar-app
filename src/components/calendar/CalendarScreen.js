@@ -10,10 +10,11 @@ import { Navbar } from '../ui/Navbar';
 import { CalendarEvent } from './CalendarEvent';
 import { CalendarModal } from './CalendarModal';
 import { uiOpenModal } from '../../actions/ui';
-import { eventSetActive } from '../../actions/events';
+import { eventClearActiveEvent, eventSetActive } from '../../actions/events';
 import { useDispatch } from 'react-redux';
 import { AddNewFab } from '../ui/AddNewFab';
 import { useSelector } from 'react-redux';
+import { DeleteEventFab } from '../ui/DeleteEventFab';
 
 
 // moment.locale('es');para cambiar el nombre de las fechas a español
@@ -38,7 +39,7 @@ export const CalendarScreen = () => {
 
     const dispatch = useDispatch();
 
-    const  { events }  = useSelector(state => state.calendar);
+    const  { events, activeEvent }  = useSelector(state => state.calendar);
 
     const [lastView, setLastView] = useState(localStorage.getItem('lastView') || 'month' );
 
@@ -59,6 +60,12 @@ export const CalendarScreen = () => {
         setLastView(e);
         localStorage.setItem('lastView', e);
         //guardo info en el storage en este  caso dice guardame la ultima vista para cuando cargue la pag siempre este en lo ultimo que vi.
+    }
+
+    const onSelectSlot = (e) =>{
+        // si quieres dar click en cualquier parte del calendario y editarlo esta es la funsion como plus
+        dispatch( eventClearActiveEvent(e) );
+
     }
 
     const eventStyleGetter = ( event, start, end, isSelected ) =>{
@@ -91,6 +98,8 @@ export const CalendarScreen = () => {
                 onDoubleClickEvent= { onDoubleClick }
                 onSelectEvent= { onSelectEvent }
                 onView= { onViewChange }
+                onSelectSlot={ onSelectSlot }
+                selectable={ true }
                 view= { lastView }
                 components={{
                     event: CalendarEvent
@@ -98,6 +107,10 @@ export const CalendarScreen = () => {
                 />
 
                 <AddNewFab />
+
+                {
+                    ( activeEvent ) &&       <DeleteEventFab />
+                }
 
                 <CalendarModal />
         </div>

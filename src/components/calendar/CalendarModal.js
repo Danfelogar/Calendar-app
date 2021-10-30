@@ -40,7 +40,7 @@ export const CalendarModal = () => {
 
     const dispatch = useDispatch();
 
-    const [dateStart, setDateStart] = useState(  now.toDate()  );
+    const [dateStart, setDateStart] = useState(  now.toDate() );
 
     const [dateEnd, setDateEnd] = useState(  nowPlus1.toDate()  );
 
@@ -53,7 +53,9 @@ export const CalendarModal = () => {
     useEffect(() => {
         if ( activeEvent ) {
             setFormValues( activeEvent );
-        }
+        }else{
+            setFormValues( initEvent );
+        }//con esto me quito la nota borrada del activeEvent en caso sea borrada al undir solo un click
     }, [activeEvent])
 
     const handleInputChange = ({ target }) =>{
@@ -132,7 +134,7 @@ export const CalendarModal = () => {
         className="modal"
         overlayClassName="modal-fondo"
         >
-            <h1> Nuevo evento </h1>
+            <h1>{ (activeEvent) ? 'Edit event' : 'New event' }</h1>
             <hr />
             <form
             className="container"

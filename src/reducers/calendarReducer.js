@@ -46,6 +46,14 @@ export const calendarReducer = ( state = initialState, action) => {
                 )
                 //adentro tenemos un evento y si es igual al evento que quiero modificar me regresara el acti.pay y sino no existe el evento
             }
+        case types.eventDeleted:
+            return{
+                ...state,
+                events: state.events.filter(
+                    e => ( e.id !== state.activeEvent.id )
+                ),
+                activeEvent: null
+            }
         default:
             return state;
     }
