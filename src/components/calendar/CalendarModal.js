@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { uiCloseModal } from '../../actions/ui';
-import { eventAddNew, eventClearActiveEvent, eventUpdated } from '../../actions/events';
+import { eventClearActiveEvent, eventStartAddNew, eventStartUpdated } from '../../actions/events';
 
 
 const customStyles = {
@@ -97,18 +97,10 @@ export const CalendarModal = () => {
         }
 
         if( activeEvent ) {
-            dispatch( eventUpdated(formValues) );
+            dispatch( eventStartUpdated(formValues) );
             //si selecciono una carta  con activeEvent retorname de nuevo el formulario para cambiarlo
         }else{
-            dispatch(eventAddNew({
-                ...formValues,
-                id: new Date().getTime(),
-                user: {
-                    _id:'123',
-                    name: 'polo'
-                }
-            })
-            );
+            dispatch(eventStartAddNew( formValues ));
             // de lo contrario creame una accion nueva
         }
 
